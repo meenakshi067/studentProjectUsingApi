@@ -2,6 +2,12 @@ import React, { Component } from "react";
 import axios from 'axios';
 import "./Css/Addpage.css";
 class Addpage extends Component {
+  constructor(props){
+    super(props)
+    console.log(props.state);
+    this.state=props.state.state;
+  }
+
 
   handleSubmit(event) {
     event.preventDefault();
@@ -20,6 +26,9 @@ class Addpage extends Component {
     if (!data.get('id')) {
       document.querySelector(".loading-overlay p").textContent = "Adding Student Data...";
       axios.post("http://localhost:5000/", obj).then((res) => {
+        console.log(this);
+        this.props.state.getStudentList();
+        
         console.log(res);
       document.querySelector(".loading-overlay").classList.add("hidden");
       event.target.closest(".overlay").classList.add("hidden");
@@ -30,6 +39,7 @@ class Addpage extends Component {
       obj.id = data.get('id');
       document.querySelector(".loading-overlay p").textContent = "Updating Student Data...";
       axios.put("http://localhost:5000/", obj).then(res => {
+        this.props.state.getStudentList();
         document.querySelector(".loading-overlay").classList.add("hidden");
         event.target.closest(".overlay").classList.add("hidden");
       })
@@ -39,7 +49,7 @@ class Addpage extends Component {
   render() {
     return (
       //  <form>
-      <form onSubmit={this.handleSubmit} autoComplete="off">
+      <form onSubmit={this.handleSubmit.bind(this)} autoComplete="off">
         <div className="loading-overlay hidden">
           <p>Adding Student Data...</p>
         </div>

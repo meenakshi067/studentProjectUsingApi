@@ -1,22 +1,44 @@
-import React, { useState } from "react";
+
+import React, { Component } from "react";
 import "./Css/Dashboard.css";
 import Addpage from "./Addpage";
 import axios from "axios";
+class Dashboard extends Component{
+  constructor(props){
 
-function Dashboard() {
-  let [studentdata, setstudentdata] = useState([]);
+   super(props)
+   this.state={
 
-  const getStudentList = () => {
+    studentdata:[]
+  }
+   this.getStudentList()
+   console.log(props);
+  }
+  
+  
+
+ getStudentList = () => {
     axios.get("http://localhost:5000/").then((res) => {
-      setstudentdata(res.data);
+      this.setState({studentdata:res.data});
     });
   };
 
+  componentDidMount(){
+    //hide add form
+  document.querySelector(".overlay")?.addEventListener("click", function (e) {
+    if (
+      e.target.className.includes("close-btn") ||
+      e.target.className.includes("overlay")
+    )
+      document.querySelector(".overlay")?.classList.add("hidden");
+  });
+  }
 
-  getStudentList();
+
+  
 
   //show add form
-    const showdashboard = () => {
+     showdashboard = () => {
     const form = document.querySelector(".overlay");
     document.querySelector(".overlay")?.classList.remove("hidden");
     form.querySelector('input[name=name]').value = null;
@@ -28,17 +50,10 @@ function Dashboard() {
   };
 
 
-  //hide add form
-  document.querySelector(".overlay")?.addEventListener("click", function (e) {
-    if (
-      e.target.className.includes("close-btn") ||
-      e.target.className.includes("overlay")
-    )
-      document.querySelector(".overlay")?.classList.add("hidden");
-  });
+  
 
   //delete data
-  const studentdelete = (id) => {
+   studentdelete = (id) => {
     document.querySelector(".delete-overlay").classList.remove("hidden");
     axios
       .delete("http://localhost:5000/", {
@@ -48,6 +63,7 @@ function Dashboard() {
       })
       .then(
         (res) => {
+          this.getStudentList();
           console.log(res.data.message);
           document.querySelector(".delete-overlay").classList.add("hidden");
         },
@@ -58,10 +74,10 @@ function Dashboard() {
   };
 
 //edit data
-  const studentedit = (id) => {
+   studentedit = (id) => {
     document.querySelector(".overlay")?.classList.remove("hidden");
     const form = document.querySelector("form");
-    const student = (studentdata.find(student => student.id === id));
+    const student = (this.state.studentdata.find(student => student.id === id));
 
     form.querySelector('input[name=name]').value = student.name;
     form.querySelector('input[name=email]').value = student.email;
@@ -72,21 +88,21 @@ function Dashboard() {
 
   }
 
-
-return (
+render(){
+return(
     <div className="Main">
       <div className="delete-overlay hidden">
         <p>Deleting Student Data...</p>
       </div>
       <div className="overlay hidden">
-        <Addpage></Addpage>
+        <Addpage state={this}></Addpage>
       </div>
       <div className="Header">
         <div>
           <b>Student List</b>
         </div>
         <div className="btn-Add">
-          <button onClick={showdashboard}>
+          <button onClick={this.showdashboard}>
             <i className="fas fa-user-plus"></i>Add
           </button>
         </div>
@@ -103,7 +119,7 @@ return (
               <p>Action</p>
             </div>
             <div className="table-content">
-              {studentdata.map((student, index) => {
+              {this.state.studentdata.map((student, index) => {
                 const date = new Date(student.createdon);
                 return (
                   <div className="table-row">
@@ -116,12 +132,12 @@ return (
                     </p>
                     <p>
                       <div>
-                        <button className="btn" onClick={studentedit.bind(null, student.id)}>
+                        <button className="btn" onClick={this.studentedit.bind(null, student.id)}>
                           <i className="fas fa-user-edit"></i>
                         </button>
                         <button
                           className="btn"
-                          onClick={studentdelete.bind(null, student.id)}
+                          onClick={this.studentdelete.bind(null, student.id)}
                         >
                           <i className=" icon-delete fas fa-user-slash"></i>
                         </button>
@@ -131,7 +147,7 @@ return (
                 );
               })}
               <p>
-                {studentdata.length === 0 ? "  No Student Records found." : ""}
+                {this.state.studentdata.length === 0 ? "  No Student Records found." : ""}
               </p>
             </div>
           </div>
@@ -139,6 +155,7 @@ return (
       </div>
     </div>
   );
+}
 }
 export default Dashboard;
 

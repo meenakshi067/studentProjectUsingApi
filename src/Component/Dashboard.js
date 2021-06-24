@@ -12,7 +12,7 @@ class Dashboard extends Component{
     studentdata:[]
   }
    this.getStudentList()
-   console.log(props);
+  // console.log(props);
   }
   
   
@@ -98,8 +98,8 @@ return(
         <Addpage state={this}></Addpage>
       </div>
       <div className="Header">
-        <div>
-          <b>Student List</b>
+        <div   style={{marginLeft:"45%"}}>
+          <h2><b>Student List</b></h2>
         </div>
         <div className="btn-Add">
           <button onClick={this.showdashboard}>

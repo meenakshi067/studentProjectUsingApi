@@ -1,19 +1,45 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import "./Css/Addpage.css";
+import { toast } from "react-toastify";
 class Addpage extends Component {
   constructor(props){
     super(props)
-    console.log(props.state);
+
+    //console.log(props.state);
     this.state=props.state.state;
   }
+
+
+//   vaild = () => {
+//     if (!this.Studentdata.email){
+     
+//         toast( "please enter your Email")
+    
+//     }
+//     else if(!this.Studentdata.email.includes("@")){
+     
+//         toast("please enter your vaild Email")
+      
+//     }
+//     else if(!this.Studentdata.name){
+      
+//         toast("please enter your name")
+      
+//     }    
+//     else {
+//     return true;
+// }
+//   }
+  
+
+
 
 
   handleSubmit(event) {
     event.preventDefault();
     const data = new FormData(event.target);
      
-
     var obj = {
                              
       name: data.get("name"),
@@ -21,30 +47,38 @@ class Addpage extends Component {
       qualification: data.get("qualification"),
     };
     document.querySelector(".loading-overlay").classList.remove("hidden");
+
+
     
     //post data
     if (!data.get('id')) {
       document.querySelector(".loading-overlay p").textContent = "Adding Student Data...";
       axios.post("http://localhost:5000/", obj).then((res) => {
-        console.log(this);
+       // console.log(this);
+       
         this.props.state.getStudentList();
         
-        console.log(res);
+      //  console.log(res);
       document.querySelector(".loading-overlay").classList.add("hidden");
       event.target.closest(".overlay").classList.add("hidden");
-      });
+    });
+    toast.success("data added successfully", {autoClose:2000})
 
-      //updating data
-    } else {
-      obj.id = data.get('id');
-      document.querySelector(".loading-overlay p").textContent = "Updating Student Data...";
-      axios.put("http://localhost:5000/", obj).then(res => {
-        this.props.state.getStudentList();
-        document.querySelector(".loading-overlay").classList.add("hidden");
-        event.target.closest(".overlay").classList.add("hidden");
-      })
-    }
+    
+    
+    //updating data
+  } else {
+    obj.id = data.get('id');
+    document.querySelector(".loading-overlay p").textContent = "Updating Student Data...";
+    axios.put("http://localhost:5000/", obj).then(res => {
+      this.props.state.getStudentList();
+      document.querySelector(".loading-overlay").classList.add("hidden");
+      event.target.closest(".overlay").classList.add("hidden");
+    })
   }
+  
+}
+
 
   render() {
     return (

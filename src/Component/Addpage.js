@@ -46,6 +46,13 @@ class Addpage extends Component {
       email: data.get("email"),
       qualification: data.get("qualification"),
     };
+
+    if(data.get("name")==="phani")
+    {
+      toast.error('failed to add data', {autoClose:2000});
+      return false;
+      
+    }
     document.querySelector(".loading-overlay").classList.remove("hidden");
 
 
@@ -57,17 +64,18 @@ class Addpage extends Component {
        // console.log(this);
        
         this.props.state.getStudentList();
+
+
         
       //  console.log(res);
       document.querySelector(".loading-overlay").classList.add("hidden");
       event.target.closest(".overlay").classList.add("hidden");
     });
     toast.success("data added successfully", {autoClose:2000})
-
-    
+  
     
     //updating data
-  } else {
+} else  {
     obj.id = data.get('id');
     document.querySelector(".loading-overlay p").textContent = "Updating Student Data...";
     axios.put("http://localhost:5000/", obj).then(res => {
@@ -77,6 +85,7 @@ class Addpage extends Component {
     })
   }
   
+
 }
 
 

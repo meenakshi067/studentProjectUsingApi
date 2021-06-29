@@ -1,4 +1,5 @@
 
+
 import React, { Component } from "react";
 import "./Css/Dashboard.css";
 import Addpage from "./Addpage";
@@ -39,6 +40,7 @@ class Dashboard extends Component{
 
   //show add form
      showdashboard = () => {
+      document.querySelector(".error").style.display="none";
     const form = document.querySelector(".overlay");
     document.querySelector(".overlay")?.classList.remove("hidden");
     form.querySelector('input[name=name]').value = null;
@@ -55,6 +57,8 @@ class Dashboard extends Component{
   //delete data
    studentdelete = (id) => {
     document.querySelector(".delete-overlay").classList.remove("hidden");
+    document.querySelectorAll(".delete-overlay button").forEach(e=>e.addEventListener("click",(event)=>{
+      if(event.target.className.includes("yes")){
     axios
       .delete("http://localhost:5000/", {
         data: {
@@ -71,7 +75,13 @@ class Dashboard extends Component{
           console.log(err);
         }
       );
-  };
+  }else if(event.target.className.includes("no")){
+    document.querySelector(".delete-overlay").classList.add("hidden");
+  }
+}))
+
+};
+
 
 //edit data
    studentedit = (id) => {
@@ -92,7 +102,13 @@ render(){
 return(
     <div className="Main">
       <div className="delete-overlay hidden">
-        <p>Deleting Student Data...</p>
+       <div>
+        <p>Are you sure you want to delete this Student Data...</p>
+        <div>
+          <button class="yes" >yes</button>
+          <button class="no" >No</button>
+        </div>
+      </div>
       </div>
       <div className="overlay hidden">
         <Addpage state={this}></Addpage>
@@ -158,4 +174,5 @@ return(
 }
 }
 export default Dashboard;
+
 

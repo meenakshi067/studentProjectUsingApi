@@ -11,34 +11,77 @@ class Addpage extends Component {
   }
 
 
-//   vaild = () => {
-//     if (!this.Studentdata.email){
-     
-//         toast( "please enter your Email")
-    
-//     }
-//     else if(!this.Studentdata.email.includes("@")){
-     
-//         toast("please enter your vaild Email")
-      
-//     }
-//     else if(!this.Studentdata.name){
-      
-//         toast("please enter your name")
-      
-//     }    
-//     else {
-//     return true;
-// }
-//   }
+   // method to validate email id
+   validateEmail(email) {
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    // /^ [a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+.[A-Za-z]+$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+
+
+handleSubmit(event) {
+  event.preventDefault();
+  const data = new FormData(event.target);
+  let valid=true;
   
+  if(data.get("name")==="" && data.get("email")==="" && data.get("qualification")==="")
+  {
+    document.querySelector(".error").style.display="block";
+    document.querySelectorAll(".error ol li")[2].style.display="block";
+    document.querySelectorAll(".error ol li")[1].style.display="none";
+    document.querySelectorAll(".error ol li")[0].style.display="none";
+    valid=false;
+  }
+  
+  else if(!this.validateEmail(data.get("email")) && ((!data.get("name")) || !((data.get("name")).charCodeAt(0) >=65 && (data.get("name")).charCodeAt(0) <=90) 
+  || (!(data.get("name").includes(" ")))))
+  {
+    document.querySelector(".error").style.display="block";
+    document.querySelectorAll(".error ol li")[1].style.display="block";
+    document.querySelectorAll(".error ol li")[0].style.display="block";
+    document.querySelectorAll(".error ol li")[2].style.display="none";
+    valid=false;
+  }
+  // else if(data.get("qualification")==="")
+  // {
+  //   document.querySelector(".error").style.display="block";
+  //   document.querySelectorAll(".error ol li")[1].style.display="none";
+  //   document.querySelectorAll(".error ol li")[0].style.display="none";
+  //   document.querySelectorAll(".error ol li")[2].style.display="none";
+  //   document.querySelectorAll(".error ol li")[3].style.display="block";
+  //   valid=false;
+  // }
+  // else if(data.get("qualification")==="" && data.get("email")==="")
+  // {
+  //   document.querySelector(".error").style.display="block";
+  //   document.querySelectorAll(".error ol li")[1].style.display="block";
+  //   document.querySelectorAll(".error ol li")[0].style.display="none";
+  //   document.querySelectorAll(".error ol li")[2].style.display="none";
+  //   document.querySelectorAll(".error ol li")[3].style.display="block";
+  //   valid=false;
+  // }
+  else if(!this.validateEmail(data.get("email")))
+  {
+    document.querySelector(".error").style.display="block";
+    document.querySelectorAll(".error ol li")[1].style.display="block";
+    document.querySelectorAll(".error ol li")[0].style.display="none";
+    document.querySelectorAll(".error ol li")[2].style.display="none";
+    valid=false;
+}
+else if((!data.get("name")) || !((data.get("name")).charCodeAt(0) >=65 && (data.get("name")).charCodeAt(0) <=90) 
+|| (!(data.get("name").includes(" "))))
+{
+document.querySelector(".error").style.display="block";
+document.querySelectorAll(".error ol li")[0].style.display="block";
+document.querySelectorAll(".error ol li")[1].style.display="none";
+valid=false;
+}
+if(!valid)
+return;
 
 
-
-
-  handleSubmit(event) {
-    event.preventDefault();
-    const data = new FormData(event.target);
      
     var obj = {
                              
@@ -47,12 +90,8 @@ class Addpage extends Component {
       qualification: data.get("qualification"),
     };
 
-    if(data.get("name")==="phani")
-    {
-      toast.error('failed to add data', {autoClose:2000});
-      return false;
-      
-    }
+    
+  
     document.querySelector(".loading-overlay").classList.remove("hidden");
 
 
@@ -62,16 +101,21 @@ class Addpage extends Component {
       document.querySelector(".loading-overlay p").textContent = "Adding Student Data...";
       axios.post("http://localhost:5000/", obj).then((res) => {
        // console.log(this);
-       
+       //console.log(res);
+       toast.success(res.data.message, {autoClose:2000})
         this.props.state.getStudentList();
-
-
-        
       //  console.log(res);
       document.querySelector(".loading-overlay").classList.add("hidden");
       event.target.closest(".overlay").classList.add("hidden");
+      // window.setInterval(window.location.reload(),5000);
+      
+    }).catch(error=>{
+     // console.log(error);
+      document.querySelector(".loading-overlay").classList.add("hidden");
+      event.target.closest(".overlay").classList.add("hidden");
+      toast.error(error.message, {autoClose:2000});
     });
-    toast.success("data added successfully", {autoClose:2000})
+    
   
     
     //updating data
@@ -87,6 +131,9 @@ class Addpage extends Component {
   
 
 }
+ reset(){
+  document.querySelector(".error").style.display="none";
+ }
 
 
   render() {
@@ -102,6 +149,18 @@ class Addpage extends Component {
           </button>
 
           <div className="form">
+
+          <div className="error">
+          <h3>Errors</h3>
+          <ol>
+            <li>Value entered in the name field is invalid</li>
+            <li>Value entered in the Email field is invalid</li>
+            <li>please fill all the fields</li>
+            <li>Value entered in the qualification field is invalid</li>
+          </ol>
+
+
+          </div>
             <div className="Detail-requried">
               <label>
                 Name*<span className="ast"></span>
@@ -112,8 +171,10 @@ class Addpage extends Component {
                 name="name"
                 id="name"
                 placeholder="Name"
-                required
+               // required
+               // pattern = "[a-zA-Z]+ [a-zA-Z]+$"
                 autoComplete="false"
+                maxLength="20"
               />
             </div>
             <div className="Detail-requried">
@@ -130,12 +191,13 @@ class Addpage extends Component {
             </div>
             <div className="Detail-requried">
               <label>Email*</label>
-              <input
+              <input className="emailverify"
                 type="email"
                 name="email"
                 id="name"
                 placeholder="Email"
-                required
+               //required
+               // pattern ="[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+[A-Za-z]+$"
                 autoComplete="false"
               />
             </div>
@@ -154,7 +216,7 @@ class Addpage extends Component {
             <div className="reset-save Detail-requried">
               <button className="btn" type='submit'>Submit</button>
               <div>
-                <button className="btn1" type="reset">Reset</button>
+                <button className="btn1" onClick={this.reset.bind(this)} type="reset">Reset</button>
               </div>
             </div>
           </div>
@@ -165,3 +227,4 @@ class Addpage extends Component {
 }
 
 export default Addpage;
+

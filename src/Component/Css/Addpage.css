@@ -22,6 +22,8 @@
   display: flex;
   align-items: center;
 }
+
+
 .Add-user .form .Detail-requried label {
   width: 180px;
   color: black;
@@ -91,4 +93,24 @@
 .hidden{
     display: none;
 }
+.error{
+  border:1px solid #e10;
+  padding: 5px 15px;
+  background: #ea5;
+  margin: 5px auto;
+  margin-bottom: 15px;
+  display: none;
+}
+.error ol{
+  margin: 0 10px;
+
+}
+.error ol li{
+  color: #e10;
+  display: none;
+}
+
+
+
+
 

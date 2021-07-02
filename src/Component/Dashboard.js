@@ -39,12 +39,13 @@ class Dashboard extends Component{
 
   //show add form
      showdashboard = () => {
+      document.querySelector(".error").style.display="none";
     const form = document.querySelector(".overlay");
     document.querySelector(".overlay")?.classList.remove("hidden");
     form.querySelector('input[name=name]').value = null;
     form.querySelector('input[name=email]').value = null;
     form.querySelector('input[name=id]').value = null;
-    form.querySelector('input[name=qualification]').value = null;
+    form.querySelector('#qualification').value = null;
     document.querySelector(".overlay").querySelector('button[type=submit]').textContent = 'Submit';
 
   };
@@ -55,6 +56,8 @@ class Dashboard extends Component{
   //delete data
    studentdelete = (id) => {
     document.querySelector(".delete-overlay").classList.remove("hidden");
+    document.querySelectorAll(".delete-overlay button").forEach(e=>e.addEventListener("click",(event)=>{
+      if(event.target.className.includes("yes")){
     axios
       .delete("http://localhost:5000/", {
         data: {
@@ -71,7 +74,13 @@ class Dashboard extends Component{
           console.log(err);
         }
       );
-  };
+  }else if(event.target.className.includes("no")){
+    document.querySelector(".delete-overlay").classList.add("hidden");
+  }
+}))
+
+};
+
 
 //edit data
    studentedit = (id) => {
@@ -82,7 +91,7 @@ class Dashboard extends Component{
     form.querySelector('input[name=name]').value = student.name;
     form.querySelector('input[name=email]').value = student.email;
     form.querySelector('input[name=id]').value = student.id;
-    form.querySelector('input[name=qualification]').value = student.qualification;
+    form.querySelector('#qualification').value = student.qualification;
     form.querySelector('button[type=submit]').textContent = 'edit';
     
 
@@ -92,7 +101,13 @@ render(){
 return(
     <div className="Main">
       <div className="delete-overlay hidden">
-        <p>Deleting Student Data...</p>
+       <div>
+        <p style={{color:"red",fontWeight:"bold"}}>Are you sure you want to delete this Student Data...</p>
+        <div>
+          <button className="yes" >Yes</button>
+          <button className="no" >No</button>
+        </div>
+      </div>
       </div>
       <div className="overlay hidden">
         <Addpage state={this}></Addpage>
@@ -102,8 +117,8 @@ return(
           <h2><b>Student List</b></h2>
         </div>
         <div className="btn-Add">
-          <button onClick={this.showdashboard}>
-            <i className="fas fa-user-plus"></i>Add
+          <button onClick={this.showdashboard} style={{height: "30px",width: "60px"}}>
+            <i className="fas fa-user-plus"></i> Add
           </button>
         </div>
       </div>

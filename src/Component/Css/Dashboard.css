@@ -42,7 +42,7 @@
 }
 .table-row p{
   border:1px solid #61dafb;
-  width:100%;
+  /* width:120%; */
   height:100%;
   padding: 10px 20px;
   overflow-x:auto;
@@ -133,3 +133,9 @@ height: 200px;
 
 
  } 
+ .yes:hover{
+   background-color: darkgrey;
+ }
+ .no:hover{
+  background-color: darkgrey;
+}

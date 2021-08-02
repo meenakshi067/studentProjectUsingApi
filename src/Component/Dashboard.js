@@ -1,8 +1,12 @@
 
+
 import React, { Component } from "react";
 import "./Css/Dashboard.css";
 import Addpage from "./Addpage";
 import axios from "axios";
+import { connect } from "react-redux";
+import {getdashboardata} from '../module/action/action'
+
 class Dashboard extends Component{
   constructor(props){
 
@@ -12,6 +16,7 @@ class Dashboard extends Component{
     studentdata:[]
   }
    this.getStudentList()
+   this.props.fetchallData()
   // console.log(props);
   }
   
@@ -66,7 +71,8 @@ class Dashboard extends Component{
       })
       .then(
         (res) => {
-          this.getStudentList();
+          this.props.fetchallData()
+          // this.getStudentList();
           console.log(res.data.message);
           document.querySelector(".delete-overlay").classList.add("hidden");
         },
@@ -93,11 +99,37 @@ class Dashboard extends Component{
     form.querySelector('input[name=id]').value = student.id;
     form.querySelector('#qualification').value = student.qualification;
     form.querySelector('button[type=submit]').textContent = 'edit';
+
+    document.querySelector(".error").style.display="none";
+    
+
+    const data = student;
+    console.log(data)
+    axios
+    .put("http://localhost:5000/", {
+      data: {
+        data,
+      },
+    })
+    .then(
+      (res) => {
+        this.props.fetchallData();
+        console.log("+++");
+        document.querySelector(".delete-overlay").classList.add("hidden");
+      },
+      (err) => {
+        console.log(err);
+        console.log("+++");
+
+      }   
+    );    
     
 
   }
 
 render(){
+  let {allstudent} = this.props
+  console.log(allstudent)
 return(
     <div className="Main">
       <div className="delete-overlay hidden">
@@ -134,7 +166,8 @@ return(
               <p>Action</p>
             </div>
             <div className="table-content">
-              {this.state.studentdata.map((student, index) => {
+                {allstudent && allstudent.map((student, index) => {
+              {/* {this.state.studentdata.map((student, index) => { */}
                 const date = new Date(student.createdon);
                 return (
                   <div className="table-row">
@@ -172,5 +205,17 @@ return(
   );
 }
 }
-export default Dashboard;
+function mapStateToProps(state) {
+  return {
+   allstudent:state.studentlist
+  };
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchallData: () => dispatch(getdashboardata()),
+  };
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Dashboard)
+// export default Dashboard;
+
 

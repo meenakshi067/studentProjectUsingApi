@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import axios from 'axios';
+import { connect } from "react-redux";
+import {getdashboardata} from '../module/action/action'
 import "./Css/Addpage.css";
 import { toast } from "react-toastify";
 class Addpage extends Component {
@@ -63,6 +65,7 @@ class Addpage extends Component {
      // document.querySelectorAll(".error ol li")[2].style.display="none";
       valid = false;
     }
+    
     if (!valid)
       return;
 
@@ -86,7 +89,8 @@ class Addpage extends Component {
         // console.log(this);
         //console.log(res);
         toast.success(res.data.message, { autoClose: 2000 })
-        this.props.state.getStudentList();
+        this.props.fetchallData();
+        // this.props.state.getStudentList();
         //  console.log(res);
         document.querySelector(".loading-overlay").classList.add("hidden");
         event.target.closest(".overlay").classList.add("hidden");
@@ -106,7 +110,8 @@ class Addpage extends Component {
       obj.id = data.get('id');
       document.querySelector(".loading-overlay p").textContent = "Updating Student Data...";
       axios.put("http://localhost:5000/", obj).then(res => {
-        this.props.state.getStudentList();
+        this.props.fetchallData();
+      // this.props.state.getStudentList();
         document.querySelector(".loading-overlay").classList.add("hidden");
         event.target.closest(".overlay").classList.add("hidden");
       })
@@ -210,5 +215,17 @@ class Addpage extends Component {
     );
   }
 }
+function mapStateToProps(state) {
+  return {
+   allstudent:state.studentlist
+  };
+}
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchallData: () => dispatch(getdashboardata()),
+  };
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Addpage);
 
-export default Addpage;
+// export default Addpage;
+
